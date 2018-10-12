@@ -23,7 +23,7 @@ also append getstate as second argument) */
 /* SCHEME:  on form submit TestForm component calls method from AddTestPage (with args from form)via props...
 ..this method calls startAddTest (imported) but it calls it as argument via dispatch ...
 ..this activates redux thunk which invokes that method and via it, final dispatch of action object is executed */
-
+//ahoj
 export const startAddTest = (test) => {
     return (dispatch) => {
         
