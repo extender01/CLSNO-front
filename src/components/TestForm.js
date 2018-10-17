@@ -4,7 +4,7 @@ import {startAddTest} from '../actions/testActions';
 
 
 
-class TestForm extends React.Component {
+export default class TestForm extends React.Component {
    
     constructor(props) {
         super(props);
@@ -21,8 +21,14 @@ class TestForm extends React.Component {
     };
    
     onSubmit = (e) => {
+        
+
         e.preventDefault();
-        this.props.formSubmit({name: this.state.name})
+
+      
+        console.log('submit starts, calling formSubmit defined on AddTestPageComponent with object created from form data, formSubmit calls dispatch(startAddTest(...) via mapStateToProps');
+        
+        this.props.formSubmit({name: this.state.name, where: 'Krnov fixne'})
     };
 
 
@@ -32,9 +38,10 @@ class TestForm extends React.Component {
             <div>
                 <p>This is from test form</p>
                 <form onSubmit={this.onSubmit}>
-                    <input type='text' value={this.state.nazev} onChange={this.onChange} />
-                    <button>Submit</button>
+                    <input type='text' value={this.state.name} onChange={this.onChange} />
+                    <button>Submitvoe</button>
                 </form>
+
             </div>
         )
     };
@@ -47,12 +54,12 @@ class TestForm extends React.Component {
 
 
 
-const mapDispatchToProps = (dispatch) => {
-    return {
-        startAddTest: (test) => {
-            dispatch(startAddTest(test))
-        }
-    };
-};
+// const mapDispatchToProps = (dispatch) => {
+//     return {
+//         startAddTest: (test) => {
+//             dispatch(startAddTest(test))
+//         }
+//     };
+// };
 
-export default connect(undefined, mapDispatchToProps)(TestForm);
+// export default connect(undefined, mapDispatchToProps)(TestForm);

@@ -14,16 +14,26 @@ class AddTestPage extends React.Component {
         return (
             <div>
             This is from my add test page
-            <TestForm formSubmit={this.props.formSubmit} />
+            {this.props.error &&   <p>{this.props.error.message}</p>}
+
+            
+            <TestForm formSubmit={this.props.startAddTest} />
             </div>
         )
     }
 };
 
 
+const mapStateToProps = (state) => {
+    return {
+        loading: state.labTests.loading,
+        error: state.labTests.error
+    }
+};
+
 const mapDispatchToProps = (dispatch) => {
     return {
-        formSubmit: (test) => {
+        startAddTest: (test) => {
             dispatch(startAddTest(test))
         }
     }
@@ -31,5 +41,5 @@ const mapDispatchToProps = (dispatch) => {
 
 
 
-export default connect(undefined, mapDispatchToProps)(AddTestPage);
+export default connect(mapStateToProps, mapDispatchToProps)(AddTestPage);
 
