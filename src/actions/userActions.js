@@ -1,11 +1,13 @@
 import axios from 'axios';
 import Cookies from 'js-cookie';
 
+const url = 'http://127.0.0.1:3000';
+
 
 //========================LOGIN==========================================================
 
 const loginBegin = () => ({type: "LOGIN_BEGIN"});
-const loginFailure = (error = null) => ({type: "LOGIN_FAILURE", payload: {error}});
+const loginFailure = (error = null) => ({type: "LOGIN_FAILURE", error: error});
 const loginSuccess = (user = {}) => {
     return {
         type: "LOGIN_SUCCESS",
@@ -22,17 +24,17 @@ export const startLogin = (credentials) => {
 
     return (dispatch) => {
         dispatch(loginBegin());
-
+       
         axios({
             method: 'post',
-            url: 'http://localhost:3000' + '/login',
+            url: url + '/login',
             data: {
               nick: credentials.nick,
               password: credentials.password
             }}
           ).then((result) => {
-             Cookies.set('x-auth', result.headers['x-auth']);
-            console.log(Cookies.get());
+            // Cookies.set('x-auth', result.headers['x-auth']);
+           // console.log(Cookies.get());
             
               
              dispatch(loginSuccess(result.data));
@@ -45,9 +47,58 @@ export const startLogin = (credentials) => {
 };
 
 
+//==================LOGGED USER==========================================================
+
+//checks in db who is owner of x-auth cookie and sends back nick and id info (and stores them to redux)
+const loggedUserBegin = () => ({type: "LOGGED_USER_BEGIN"});
+const loggedUserFailure = (error = null) => ({type: 'LOGGED_USER_FAILURE', error: error});
+export const loggedUserSuccess = (user) => {
+    if (user) {
+        return {
+            type: 'LOGGED_USER_SUCCESS',
+            user: {
+                _id: user._id,
+                nick: user.nick
+                
+            },
+            
+        }
+    } 
+};
+
+
+
+
+
+export const startLoggedUser = () => {
+    return (dispatch) => {
+        dispatch(loggedUserBegin());
+
+        
+        axios({
+            method: 'get',
+            url: url + '/me'
+           // headers: {
+           //     'x-auth': Cookies.get('x-auth')
+           // }
+        }).then((result) => {
+            console.log(result.data);
+            dispatch(loggedUserSuccess(result.data));
+        }).catch((e) => {
+            dispatch(loggedUserFailure(e));
+        });
+            
+        
+    };
+};
+
+
+
+
+
 //============================LOGOUT======================================================
 const logoutBegin = () => ({type: "LOGOUT_BEGIN"});
-
+const logoutFailure = (error) => ({type: "LOGOUT_FAILURE", error: error});
 const logoutSuccess = () => {
     return {
         type: 'LOGOUT_SUCCESS'
@@ -57,21 +108,24 @@ const logoutSuccess = () => {
 export const startLogout = () => {
     return (dispatch) => {
         dispatch(logoutBegin());
-
+        console.log('zacina logout');
+        
         axios({
             method: 'delete',
-            url: 'http://localhost:3000' + '/logout',
+            url: url + '/logout',
             headers: {
                 'x-auth': Cookies.get('x-auth')
             }    
     
 
-        }).then((result) => {
+        }).then(() => {
             console.log('uspesne smazano');
             Cookies.remove('x-auth');
             dispatch(logoutSuccess())
             
-        })
+        }).catch((e) => {
+            dispatch(logoutFailure(e))
+        });
     }
 };
 
@@ -80,7 +134,7 @@ export const startLogout = () => {
 //============================SIGNUP==========================================================
 
 const signupBegin = () => ({type: 'SIGNUP_BEGIN'});
-const signupFailure = (error = null) => ({type: 'SIGNUP_FAILURE', payload: {error}});
+const signupFailure = (error = null) => ({type: 'SIGNUP_FAILURE', error: error});
 const signupSuccess = (user = {}) => {
     return {
         type: 'SIGNUP_SUCCESS'
